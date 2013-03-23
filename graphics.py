@@ -5,8 +5,10 @@ import numpy as np
 cos = np.cos
 sin = np.sin
 pi = np.pi
+dot = np.dot
 
-def plotOrbit(semi_major_axis, eccentricity):
+def plotOrbit(semi_major_axis, eccentricity=0, inclination=0, 
+              right_ascension=0, argument_perigee=0):
     "Draws orbit around an earth in units of kilometers."
 
     fig = plt.figure(figsize=plt.figaspect(1))  # Square figure
@@ -32,9 +34,16 @@ def plotOrbit(semi_major_axis, eccentricity):
     z = rz * np.outer(np.ones_like(u), np.cos(v))
 
     # Rotation matrix for inclination
-    R = np.matrix([])
+    inc = inclination * pi / 180.;
+    R = np.matrix([[1, 0, 0],
+                   [0, cos(inc), -sin(inc)],
+                   [0, sin(inc), cos(inc)]    ])
 
     # Rotation matrix for argument of perigee + right ascension
+    rot = (right_ascension + argument_perigee) * pi/180
+    R2 = np.matrix([[cos(rot), -sin(rot), 0],
+                    [sin(rot), cos(rot), 0],
+                    [0, 0, 1]    ])    
 
     # Plot:
     ax.plot_surface(x, y, z,  rstride=4, cstride=4, color='g')
@@ -43,8 +52,25 @@ def plotOrbit(semi_major_axis, eccentricity):
     theta = np.linspace(0,2*pi, 360)
     r = (semi_major_axis * (1-eccentricity**2)) / (1 + eccentricity*cos(theta))
 
-    plt.plot(r*cos(theta),r*sin(theta))
+    xr = r*cos(theta)
+    yr = r*sin(theta)
+    zr = 0 * theta
 
+    pts = np.matrix(zip(xr,yr,zr))
+
+    # Rotate by inclination
+    # Rotate by ascension + perigee
+    pts =  (R * R2 * pts.T).T
+
+
+    # Turn back into 1d vectors
+    xr,yr,zr = pts[:,0].A.flatten(), pts[:,1].A.flatten(), pts[:,2].A.flatten()
+
+    # Plot the orbit
+    ax.plot(xr, yr, zr)
+    # plt.xlabel('X (km)')
+    # plt.ylabel('Y (km)')
+    # plt.zlabel('Z (km)')
 
     # Adjustment of the axes, so that they all have the same span:
     max_radius = max(rx, ry, rz, max(r))
