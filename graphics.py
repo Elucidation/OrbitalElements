@@ -2,7 +2,9 @@ from __future__ import division
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-
+cos = np.cos
+sin = np.sin
+pi = np.pi
 
 fig = plt.figure(figsize=plt.figaspect(1))  # Square figure
 ax = fig.add_subplot(111, projection='3d')
@@ -22,15 +24,23 @@ y = ry * np.outer(np.sin(u), np.sin(v))
 z = rz * np.outer(np.ones_like(u), np.cos(v))
 
 # Plot:
-ax.plot_surface(x, y, z,  rstride=4, cstride=4, color='b')
+ax.plot_surface(x, y, z,  rstride=4, cstride=4, color='g')
+
+
+
+
+a = 5
+e = 0.3
+theta = np.linspace(0,2*pi, 360)
+r = (a * (1-e**2)) / (1 + e*cos(theta))
+
+plt.plot(r*cos(theta),r*sin(theta))
+
 
 # Adjustment of the axes, so that they all have the same span:
-max_radius = max(rx, ry, rz)
+max_radius = max(rx, ry, rz, max(r))
 for axis in 'xyz':
     getattr(ax, 'set_{}lim'.format(axis))((-max_radius, max_radius))
 
-
-
-
-
+# Draw figure
 plt.show()

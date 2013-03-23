@@ -1,13 +1,20 @@
+# -*- coding: utf-8 -*-
 import numpy as np
 from datetime import datetime, timedelta
 import pytz
+sqrt = np.sqrt
+pi = np.pi
 
-semi_major_axis = 1
-eccentricity    = 1
-inclination     = 1
-arg_perigee     = 1
-right_asc       = 1
-true_anomaly    = 1
+# Standard Gravitational parameter in km^3 / s^2 of Earth
+GM = 398600.4418
+
+# Values to be set (temporary testing)
+semi_major_axis  = -1
+eccentricity     = -1
+inclination      = -1
+argument_perigee = -1
+right_ascension  = -1
+true_anomaly     = -1
 
 def npa(arr):
     return np.array(arr)
@@ -20,13 +27,13 @@ elem1 = """ISS (ZARYA)
 1 25544U 98067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927
 2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537"""
 
-def splitElem(two_line_element):
-    "Splits a two line element into title and it's two lines with stripped lines"
-    return map(lambda x: x.strip(), two_line_element.split('\n'))
+def splitElem(tle):
+    "Splits a two line element set into title and it's two lines with stripped lines"
+    return map(lambda x: x.strip(), tle.split('\n'))
 
-def checkValid(two_line_element):
+def checkValid(tle):
     "Checks with checksum to make sure element is valid"
-    title, line1, line2 =  splitElem(two_line_element)
+    title, line1, line2 =  splitElem(tle)
 
     return line1[0] == '1' and line2[0] == '2' and \
            line1[2:7] == line2[2:7] and \
@@ -36,10 +43,10 @@ def stringScientificNotationToFloat(sn):
     "Specific format is 5 digits, a + or -, and 1 digit, ex: 01234-5 which is 0.01234e-5"
     return 0.00001*float(sn[5]) * 10**int(sn[6:])
 
-def pretty_print(two_line_element):
+def pretty_print(tle):
     "Returns commented information on a two line element"
-    title, line1, line2 =  splitElem(two_line_element)
-    if not checkValid(two_line_element):
+    title, line1, line2 =  splitElem(tle)
+    if not checkValid(tle):
         print "Invalid element."
         return
 
@@ -57,19 +64,26 @@ def pretty_print(two_line_element):
     element_number                                          = float(line1[64:68])
     checksum1                                               = float(line1[68:69])
 
-    satellite    = int(line2[2:7])
-    inclination  = float(line2[8:16])
-    right        = float(line2[17:25])
-    eccentricity = float(line2[26:33]) * 0.0000001
-    argument     = float(line2[34:42])
-    mean         = float(line2[43:51])
-    mean         = float(line2[52:63])
-    revolution   = float(line2[63:68])
-    checksum2    = float(line2[68:69])
+    satellite        = int(line2[2:7])
+    inclination      = float(line2[8:16])
+    right_ascension  = float(line2[17:25])
+    eccentricity     = float(line2[26:33]) * 0.0000001
+    argument_perigee = float(line2[34:42])
+    mean_anomaly     = float(line2[43:51])
+    mean_motion      = float(line2[52:63])
+    revolution       = float(line2[63:68])
+    checksum2        = float(line2[68:69])
 
     # Inferred Epoch date
     year = 2000 + epoch_year if epoch_year < 70 else 1900 + epoch_year
     epoch_date = datetime(year=year, month=1, day=1, tzinfo=pytz.utc) + timedelta(days=epoch)
+
+    # Inferred period
+    day_seconds = 24*60*60
+    period = day_seconds * 1./mean_motion
+
+    # Inferred semi-major axis (in km)
+    semi_major_axis = (period**2 / (2*pi) * GM)**(1./3)
 
     print "Satellite number                                          = %g (%s)" % (satellite_number, "Unclassified" if classification == 'U' else "Classified")
     print "International Designator                                  = YR: %02d, LAUNCH #%d, PIECE: %s" % (international_designator_year, international_designator_launch_number, international_designator_piece_of_launch)
@@ -80,13 +94,22 @@ def pretty_print(two_line_element):
     print "The number 0                                              = %g" % the_number_0
     print "Element number                                            = %g" % element_number
     print
-    print "Inclination [Degrees]                                     = %g" % inclination
-    print "Right Ascension of the Ascending Node [Degrees]           = %g" % right
+    print "Inclination [Degrees]                                     = %g°" % inclination
+    print "Right Ascension of the Ascending Node [Degrees]           = %g°" % right_ascension
     print "Eccentricity                                              = %g" % eccentricity
-    print "Argument of Perigee [Degrees]                             = %g" % argument
-    print "Mean Anomaly [Degrees] Anomaly                            = %g" % mean
-    print "Mean Motion [Revs per day] Motion                         = %g" % mean
+    print "Argument of Perigee [Degrees]                             = %g°" % argument_perigee
+    print "Mean Anomaly [Degrees] Anomaly                            = %g°" % mean_anomaly
+    print "Mean Motion [Revs per day] Motion                         = %g" % mean_motion
+    print "Period                                                    = %ss" % timedelta(seconds=period)
     print "Revolution number at epoch [Revs]                         = %g" % revolution
+
+
+    print "semi_major_axis = %gkm" % semi_major_axis
+    print "eccentricity    = %g" % eccentricity
+    print "inclination     = %g°" % inclination
+    print "arg_perigee     = %g°" % argument_perigee
+    print "right_ascension = %g°" % right_ascension
+    print "true_anomaly    = %g°" % true_anomaly
 
 def doChecksum(line):
     """The checksums for each line are calculated by adding the all numerical digits on that line, including the 
