@@ -6,6 +6,8 @@ import graphics
 
 sqrt = np.sqrt
 pi = np.pi
+sin = np.sin
+cos = np.cos
 
 # Standard Gravitational parameter in km^3 / s^2 of Earth
 GM = 398600.4418
@@ -44,6 +46,18 @@ def checkValid(tle):
 def stringScientificNotationToFloat(sn):
     "Specific format is 5 digits, a + or -, and 1 digit, ex: 01234-5 which is 0.01234e-5"
     return 0.00001*float(sn[5]) * 10**int(sn[6:])
+
+def eccentricAnomalyFromMean(mean_anomaly, eccentricity, initValue,
+                             maxIter=500, maxAccuracy = 0.0001):
+    """Approximates Eccentric Anomaly from Mean Anomaly
+       All input and outputs are in radians"""
+    mean_anomaly = mean_anomaly
+    e0 = initValue
+    for x in xrange(maxIter):
+        e1 = e0 - (e0 - eccentricity * sin(e0) - mean_anomaly) / (1.0 - eccentricity * cos(e0))
+        if (abs(e1-e0) < maxAccuracy):
+            break
+    return e1
 
 def pretty_print(tle):
     "Returns commented information on a two line element"
@@ -87,6 +101,13 @@ def pretty_print(tle):
     # Inferred semi-major axis (in km)
     semi_major_axis = (period**2 / (2*pi) * GM)**(1./3)
 
+    # Inferred true anomaly
+    eccentric_anomaly = eccentricAnomalyFromMean(mean_anomaly * pi/180, eccentricity, mean_anomaly * pi/180)
+    true_anomaly = np.arccos((cos(eccentric_anomaly) - eccentricity) / (1 - eccentricity * cos(eccentric_anomaly)))
+    # Convert to degrees
+    eccentric_anomaly *= 180/pi
+    true_anomaly *= 180/pi
+
     print "Satellite number                                          = %g (%s)" % (satellite_number, "Unclassified" if classification == 'U' else "Classified")
     print "International Designator                                  = YR: %02d, LAUNCH #%d, PIECE: %s" % (international_designator_year, international_designator_launch_number, international_designator_piece_of_launch)
     print "Epoch Date                                                = %s  (YR:%02d DAY:%.11g)" % (epoch_date.strftime("%Y-%m-%d %H:%M:%S.%f %Z"), epoch_year, epoch)
@@ -101,11 +122,13 @@ def pretty_print(tle):
     print "Eccentricity                                              = %g" % eccentricity
     print "Argument of Perigee [Degrees]                             = %g°" % argument_perigee
     print "Mean Anomaly [Degrees] Anomaly                            = %g°" % mean_anomaly
+    print "Eccentric Anomaly                                         = %g°" % eccentric_anomaly
+    print "True Anomaly                                              = %g°" % true_anomaly
     print "Mean Motion [Revs per day] Motion                         = %g" % mean_motion
-    print "Period                                                    = %ss" % timedelta(seconds=period)
+    print "Period                                                    = %s" % timedelta(seconds=period)
     print "Revolution number at epoch [Revs]                         = %g" % revolution
 
-
+    print
     print "semi_major_axis = %gkm" % semi_major_axis
     print "eccentricity    = %g" % eccentricity
     print "inclination     = %g°" % inclination
@@ -113,7 +136,8 @@ def pretty_print(tle):
     print "right_ascension = %g°" % right_ascension
     print "true_anomaly    = %g°" % true_anomaly
 
-    graphics.plotOrbit(semi_major_axis, eccentricity)
+    # graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
+    #                    right_ascension, argument_perigee)
 
 def doChecksum(line):
     """The checksums for each line are calculated by adding the all numerical digits on that line, including the 
