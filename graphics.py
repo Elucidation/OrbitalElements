@@ -31,6 +31,11 @@ def plotOrbit(semi_major_axis, eccentricity):
     y = ry * np.outer(np.sin(u), np.sin(v))
     z = rz * np.outer(np.ones_like(u), np.cos(v))
 
+    # Rotation matrix for inclination
+    R = np.matrix([])
+
+    # Rotation matrix for argument of perigee + right ascension
+
     # Plot:
     ax.plot_surface(x, y, z,  rstride=4, cstride=4, color='g')
 
