@@ -2,6 +2,8 @@
 import numpy as np
 from datetime import datetime, timedelta
 import pytz
+import graphics
+
 sqrt = np.sqrt
 pi = np.pi
 
@@ -110,6 +112,8 @@ def pretty_print(tle):
     print "arg_perigee     = %g°" % argument_perigee
     print "right_ascension = %g°" % right_ascension
     print "true_anomaly    = %g°" % true_anomaly
+
+    graphics.plotOrbit(semi_major_axis, eccentricity)
 
 def doChecksum(line):
     """The checksums for each line are calculated by adding the all numerical digits on that line, including the 
