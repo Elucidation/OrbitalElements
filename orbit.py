@@ -121,7 +121,7 @@ def pretty_print(tle):
     print "----------------------------------------------------------------------------------------"
 
     graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
-                       right_ascension, argument_perigee, true_anomaly)
+                       right_ascension, argument_perigee, true_anomaly, title)
 
 def doChecksum(line):
     """The checksums for each line are calculated by adding the all numerical digits on that line, including the 

@@ -13,7 +13,7 @@ ax = fig.add_subplot(111, projection='3d')
 max_radius = 0
 
 def plotOrbit(semi_major_axis, eccentricity=0, inclination=0, 
-              right_ascension=0, argument_perigee=0, true_anomaly=0):
+              right_ascension=0, argument_perigee=0, true_anomaly=0, label=None):
     "Draws orbit around an earth in units of kilometers."
 
     #### Draw Earth
@@ -87,6 +87,10 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     satz = sat[0,2]
     ax.plot([0, satx], [0, saty], [0, satz], 'r-')
     ax.plot([satx],[saty],[satz], 'ro')
+
+    # Write satellite name next to it
+    if label:
+        ax.text(satx, saty, satz, label, fontsize=12)
 
     # Adjustment of the axes, so that they all have the same span:
     global max_radius
