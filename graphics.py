@@ -88,7 +88,10 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     satx = sat[0,0]
     saty = sat[0,1]
     satz = sat[0,2]
-    ax.plot([0, satx], [0, saty], [0, satz], 'r-')
+    
+    # Draw radius vector from earth
+    # ax.plot([0, satx], [0, saty], [0, satz], 'r-')
+    # Draw red sphere for satellite
     ax.plot([satx],[saty],[satz], 'ro')
 
     # Write satellite name next to it

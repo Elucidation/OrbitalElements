@@ -40,7 +40,7 @@ def eccentricAnomalyFromMean(mean_anomaly, eccentricity, initValue,
             break
     return e1
 
-def pretty_print(tle):
+def pretty_print(tle, printInfo = True):
     "Returns commented information on a two line element"
     title, line1, line2 =  splitElem(tle)
     if not checkValid(tle):
@@ -89,39 +89,40 @@ def pretty_print(tle):
     eccentric_anomaly *= 180/pi
     true_anomaly *= 180/pi
 
-    print "----------------------------------------------------------------------------------------"
-    print "Satellite Name                                            = %s" % title
-    print "Satellite number                                          = %g (%s)" % (satellite_number, "Unclassified" if classification == 'U' else "Classified")
-    print "International Designator                                  = YR: %02d, LAUNCH #%d, PIECE: %s" % (international_designator_year, international_designator_launch_number, international_designator_piece_of_launch)
-    print "Epoch Date                                                = %s  (YR:%02d DAY:%.11g)" % (epoch_date.strftime("%Y-%m-%d %H:%M:%S.%f %Z"), epoch_year, epoch)
-    print "First Time Derivative of the Mean Motion divided by two   = %g" % first_time_derivative_of_the_mean_motion_divided_by_two
-    print "Second Time Derivative of Mean Motion divided by six      = %g" % second_time_derivative_of_mean_motion_divided_by_six
-    print "BSTAR drag term                                           = %g" % bstar_drag_term
-    print "The number 0                                              = %g" % the_number_0
-    print "Element number                                            = %g" % element_number
-    print
-    print "Inclination [Degrees]                                     = %g°" % inclination
-    print "Right Ascension of the Ascending Node [Degrees]           = %g°" % right_ascension
-    print "Eccentricity                                              = %g" % eccentricity
-    print "Argument of Perigee [Degrees]                             = %g°" % argument_perigee
-    print "Mean Anomaly [Degrees] Anomaly                            = %g°" % mean_anomaly
-    print "Eccentric Anomaly                                         = %g°" % eccentric_anomaly
-    print "True Anomaly                                              = %g°" % true_anomaly
-    print "Mean Motion [Revs per day] Motion                         = %g" % mean_motion
-    print "Period                                                    = %s" % timedelta(seconds=period)
-    print "Revolution number at epoch [Revs]                         = %g" % revolution
+    if (printInfo):
+        print "----------------------------------------------------------------------------------------"
+        print "Satellite Name                                            = %s" % title
+        print "Satellite number                                          = %g (%s)" % (satellite_number, "Unclassified" if classification == 'U' else "Classified")
+        print "International Designator                                  = YR: %02d, LAUNCH #%d, PIECE: %s" % (international_designator_year, international_designator_launch_number, international_designator_piece_of_launch)
+        print "Epoch Date                                                = %s  (YR:%02d DAY:%.11g)" % (epoch_date.strftime("%Y-%m-%d %H:%M:%S.%f %Z"), epoch_year, epoch)
+        print "First Time Derivative of the Mean Motion divided by two   = %g" % first_time_derivative_of_the_mean_motion_divided_by_two
+        print "Second Time Derivative of Mean Motion divided by six      = %g" % second_time_derivative_of_mean_motion_divided_by_six
+        print "BSTAR drag term                                           = %g" % bstar_drag_term
+        print "The number 0                                              = %g" % the_number_0
+        print "Element number                                            = %g" % element_number
+        print
+        print "Inclination [Degrees]                                     = %g°" % inclination
+        print "Right Ascension of the Ascending Node [Degrees]           = %g°" % right_ascension
+        print "Eccentricity                                              = %g" % eccentricity
+        print "Argument of Perigee [Degrees]                             = %g°" % argument_perigee
+        print "Mean Anomaly [Degrees] Anomaly                            = %g°" % mean_anomaly
+        print "Eccentric Anomaly                                         = %g°" % eccentric_anomaly
+        print "True Anomaly                                              = %g°" % true_anomaly
+        print "Mean Motion [Revs per day] Motion                         = %g" % mean_motion
+        print "Period                                                    = %s" % timedelta(seconds=period)
+        print "Revolution number at epoch [Revs]                         = %g" % revolution
 
-    print
-    print "semi_major_axis = %gkm" % semi_major_axis
-    print "eccentricity    = %g" % eccentricity
-    print "inclination     = %g°" % inclination
-    print "arg_perigee     = %g°" % argument_perigee
-    print "right_ascension = %g°" % right_ascension
-    print "true_anomaly    = %g°" % true_anomaly
-    print "----------------------------------------------------------------------------------------"
+        print
+        print "semi_major_axis = %gkm" % semi_major_axis
+        print "eccentricity    = %g" % eccentricity
+        print "inclination     = %g°" % inclination
+        print "arg_perigee     = %g°" % argument_perigee
+        print "right_ascension = %g°" % right_ascension
+        print "true_anomaly    = %g°" % true_anomaly
+        print "----------------------------------------------------------------------------------------"
 
     graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
-                       right_ascension, argument_perigee, true_anomaly, title)
+                       right_ascension, argument_perigee, true_anomaly)
 
 def doChecksum(line):
     """The checksums for each line are calculated by adding the all numerical digits on that line, including the 
@@ -130,26 +131,32 @@ def doChecksum(line):
        @note this excludes last char for the checksum thats already there."""
     return sum(map(int, filter(lambda c: c >= '0' and c <= '9', line[:-1].replace('-','1')))) % 10
 
-elem1 = """ISS (ZARYA)
-1 25544U 98067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927
-2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537"""
+# elem1 = """ISS (ZARYA)
+# 1 25544U 98067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927
+# 2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537"""
 
-dragon = """DRAGON CRS-2            
-1 39115U 13010A   13062.62492353  .00008823  00000-0  14845-3 0   188
-2 39115  51.6441 272.5899 0012056 334.2535  68.5574 15.52501943   306"""
+# dragon = """DRAGON CRS-2            
+# 1 39115U 13010A   13062.62492353  .00008823  00000-0  14845-3 0   188
+# 2 39115  51.6441 272.5899 0012056 334.2535  68.5574 15.52501943   306"""
 
 graphics.plotEarth()
 
+# Data from NORAD http://www.celestrak.com/NORAD/elements/
+# filename = "noaa.txt" # NOAA satellites
+filename = "geo.txt" # Geostationary satellites
+# filename = "stations.txt" # Space stations
+# filename = "visual.txt" # 100 brightest or so objects
+
 elem = ""
-for line in open("stations.txt",'r'):
+for line in open(filename,'r'):
     elem += line
     if (line[0] == '2'):
         elem = elem.strip()
-        pretty_print(elem)
+        pretty_print(elem, False)
         elem = ""
 
-pretty_print(elem1)
-pretty_print(dragon)
+# pretty_print(elem1)
+# pretty_print(dragon)
 
 graphics.doDraw()
 
