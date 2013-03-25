@@ -7,12 +7,14 @@ sin = np.sin
 pi = np.pi
 dot = np.dot
 
+fig = plt.figure(figsize=plt.figaspect(1))  # Square figure
+ax = fig.add_subplot(111, projection='3d')
+
+max_radius = 0
+
 def plotOrbit(semi_major_axis, eccentricity=0, inclination=0, 
               right_ascension=0, argument_perigee=0, true_anomaly=0):
     "Draws orbit around an earth in units of kilometers."
-
-    fig = plt.figure(figsize=plt.figaspect(1))  # Square figure
-    ax = fig.add_subplot(111, projection='3d')
 
     #### Draw Earth
     Earth_radius = 6371 # km
@@ -87,10 +89,11 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     ax.plot([satx],[saty],[satz], 'ro')
 
     # Adjustment of the axes, so that they all have the same span:
-    max_radius = max(rx, ry, rz, max(r))
+    global max_radius
+    max_radius = max(rx, ry, rz, max(r), max_radius)
     for axis in 'xyz':
         getattr(ax, 'set_{}lim'.format(axis))((-max_radius, max_radius))
 
+def doDraw():
     # Draw figure
     plt.show()
-

@@ -12,25 +12,6 @@ cos = np.cos
 # Standard Gravitational parameter in km^3 / s^2 of Earth
 GM = 398600.4418
 
-# Values to be set (temporary testing)
-semi_major_axis  = -1
-eccentricity     = -1
-inclination      = -1
-argument_perigee = -1
-right_ascension  = -1
-true_anomaly     = -1
-
-def npa(arr):
-    return np.array(arr)
-
-def getInclination(k, ang_momentum_vec):
-    return np.arccos(k/h)
-
-
-elem1 = """ISS (ZARYA)
-1 25544U 98067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927
-2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537"""
-
 def splitElem(tle):
     "Splits a two line element set into title and it's two lines with stripped lines"
     return map(lambda x: x.strip(), tle.split('\n'))
@@ -108,6 +89,8 @@ def pretty_print(tle):
     eccentric_anomaly *= 180/pi
     true_anomaly *= 180/pi
 
+    print "----------------------------------------------------------------------------------------"
+    print "Satellite Name                                            = %s" % title
     print "Satellite number                                          = %g (%s)" % (satellite_number, "Unclassified" if classification == 'U' else "Classified")
     print "International Designator                                  = YR: %02d, LAUNCH #%d, PIECE: %s" % (international_designator_year, international_designator_launch_number, international_designator_piece_of_launch)
     print "Epoch Date                                                = %s  (YR:%02d DAY:%.11g)" % (epoch_date.strftime("%Y-%m-%d %H:%M:%S.%f %Z"), epoch_year, epoch)
@@ -135,6 +118,7 @@ def pretty_print(tle):
     print "arg_perigee     = %g°" % argument_perigee
     print "right_ascension = %g°" % right_ascension
     print "true_anomaly    = %g°" % true_anomaly
+    print "----------------------------------------------------------------------------------------"
 
     graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
                        right_ascension, argument_perigee, true_anomaly)
@@ -146,12 +130,17 @@ def doChecksum(line):
        @note this excludes last char for the checksum thats already there."""
     return sum(map(int, filter(lambda c: c >= '0' and c <= '9', line[:-1].replace('-','1')))) % 10
 
+elem1 = """ISS (ZARYA)
+1 25544U 98067A   08264.51782528 -.00002182  00000-0 -11606-4 0  2927
+2 25544  51.6416 247.4627 0006703 130.5360 325.0288 15.72125391563537"""
 
-# ang_momentum_vec = npa([1,0,0])
-# h = npa([1,0,0])
-# print "Inclination: %s" % getInclination(h, ang_momentum_vec)
-
+dragon = """DRAGON CRS-2            
+1 39115U 13010A   13062.62492353  .00008823  00000-0  14845-3 0   188
+2 39115  51.6441 272.5899 0012056 334.2535  68.5574 15.52501943   306"""
 
 pretty_print(elem1)
+pretty_print(dragon)
+
+graphics.doDraw()
 
 # EOF
