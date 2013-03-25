@@ -84,7 +84,7 @@ def pretty_print(tle):
 
     # Inferred true anomaly
     eccentric_anomaly = eccentricAnomalyFromMean(mean_anomaly * pi/180, eccentricity, mean_anomaly * pi/180)
-    true_anomaly = np.arccos((cos(eccentric_anomaly) - eccentricity) / (1 - eccentricity * cos(eccentric_anomaly)))
+    true_anomaly = np.arctan2(sqrt(1-eccentricity) * cos(eccentric_anomaly/2.0), sqrt(1+eccentricity) * sin(eccentric_anomaly/2.0))
     # Convert to degrees
     eccentric_anomaly *= 180/pi
     true_anomaly *= 180/pi
@@ -137,6 +137,16 @@ elem1 = """ISS (ZARYA)
 dragon = """DRAGON CRS-2            
 1 39115U 13010A   13062.62492353  .00008823  00000-0  14845-3 0   188
 2 39115  51.6441 272.5899 0012056 334.2535  68.5574 15.52501943   306"""
+
+graphics.plotEarth()
+
+elem = ""
+for line in open("stations.txt",'r'):
+    elem += line
+    if (line[0] == '2'):
+        elem = elem.strip()
+        pretty_print(elem)
+        elem = ""
 
 pretty_print(elem1)
 pretty_print(dragon)

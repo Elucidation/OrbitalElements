@@ -12,12 +12,11 @@ ax = fig.add_subplot(111, projection='3d')
 
 max_radius = 0
 
-def plotOrbit(semi_major_axis, eccentricity=0, inclination=0, 
-              right_ascension=0, argument_perigee=0, true_anomaly=0, label=None):
-    "Draws orbit around an earth in units of kilometers."
-
-    #### Draw Earth
+def plotEarth():
+    "Draw Earth as a globe at the origin"
     Earth_radius = 6371 # km
+    global max_radius
+    max_radius = max(max_radius, Earth_radius)
     
     # Coefficients in a0/c x**2 + a1/c y**2 + a2/c z**2 = 1 
     coefs = (1, 1, 1)  
@@ -35,6 +34,13 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     y = ry * np.outer(np.sin(u), np.sin(v))
     z = rz * np.outer(np.ones_like(u), np.cos(v))
 
+    # Plot:
+    ax.plot_surface(x, y, z,  rstride=4, cstride=4, color='g')
+
+
+def plotOrbit(semi_major_axis, eccentricity=0, inclination=0, 
+              right_ascension=0, argument_perigee=0, true_anomaly=0, label=None):
+    "Draws orbit around an earth in units of kilometers."
     # Rotation matrix for inclination
     inc = inclination * pi / 180.;
     R = np.matrix([[1, 0, 0],
@@ -46,9 +52,6 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     R2 = np.matrix([[cos(rot), -sin(rot), 0],
                     [sin(rot), cos(rot), 0],
                     [0, 0, 1]    ])    
-
-    # Plot:
-    ax.plot_surface(x, y, z,  rstride=4, cstride=4, color='g')
 
     ### Draw orbit
     theta = np.linspace(0,2*pi, 360)
@@ -94,7 +97,7 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
 
     # Adjustment of the axes, so that they all have the same span:
     global max_radius
-    max_radius = max(rx, ry, rz, max(r), max_radius)
+    max_radius = max(max(r), max_radius)
     for axis in 'xyz':
         getattr(ax, 'set_{}lim'.format(axis))((-max_radius, max_radius))
 
