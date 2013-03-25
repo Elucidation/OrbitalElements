@@ -11,3 +11,6 @@ ISS and Dragon CRS2:
 
 Geostationary satellites:
 ![Geostationary Satellites](http://i.imgur.com/8LMmDmV.png "Geostationary Satellites")
+
+Some Military Satellites:
+![Military Satellites](http://i.imgur.com/cQdfAIG.png "Military Satellites")

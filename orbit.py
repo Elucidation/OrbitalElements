@@ -122,7 +122,7 @@ def pretty_print(tle, printInfo = True):
         print "----------------------------------------------------------------------------------------"
 
     graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
-                       right_ascension, argument_perigee, true_anomaly)
+                       right_ascension, argument_perigee, true_anomaly, title)
 
 def doChecksum(line):
     """The checksums for each line are calculated by adding the all numerical digits on that line, including the 
@@ -143,7 +143,8 @@ graphics.plotEarth()
 
 # Data from NORAD http://www.celestrak.com/NORAD/elements/
 # filename = "noaa.txt" # NOAA satellites
-filename = "geo.txt" # Geostationary satellites
+# filename = "geo.txt" # Geostationary satellites
+filename = "military.txt" # Some military satellites
 # filename = "stations.txt" # Space stations
 # filename = "visual.txt" # 100 brightest or so objects
 
