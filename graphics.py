@@ -8,7 +8,7 @@ pi = np.pi
 dot = np.dot
 
 def plotOrbit(semi_major_axis, eccentricity=0, inclination=0, 
-              right_ascension=0, argument_perigee=0):
+              right_ascension=0, argument_perigee=0, true_anomaly=0):
     "Draws orbit around an earth in units of kilometers."
 
     fig = plt.figure(figsize=plt.figaspect(1))  # Square figure
@@ -72,6 +72,20 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     # plt.ylabel('Y (km)')
     # plt.zlabel('Z (km)')
 
+    # Plot the satellite
+    sat_angle = true_anomaly * pi/180
+    satr = (semi_major_axis * (1-eccentricity**2)) / (1 + eccentricity*cos(sat_angle))
+    satx = satr * cos(sat_angle)
+    saty = satr * sin(sat_angle)
+    satz = 0
+
+    sat = (R * R2 * np.matrix([satx, saty, satz]).T ).flatten()
+    satx = sat[0,0]
+    saty = sat[0,1]
+    satz = sat[0,2]
+    ax.plot([0, satx], [0, saty], [0, satz], 'r-')
+    ax.plot([satx],[saty],[satz], 'ro')
+
     # Adjustment of the axes, so that they all have the same span:
     max_radius = max(rx, ry, rz, max(r))
     for axis in 'xyz':
@@ -79,3 +93,4 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
 
     # Draw figure
     plt.show()
+

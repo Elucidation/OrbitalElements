@@ -136,8 +136,8 @@ def pretty_print(tle):
     print "right_ascension = %g°" % right_ascension
     print "true_anomaly    = %g°" % true_anomaly
 
-    # graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
-    #                    right_ascension, argument_perigee)
+    graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
+                       right_ascension, argument_perigee, true_anomaly)
 
 def doChecksum(line):
     """The checksums for each line are calculated by adding the all numerical digits on that line, including the 
