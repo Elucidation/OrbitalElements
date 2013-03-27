@@ -8,7 +8,7 @@ pi = np.pi
 dot = np.dot
 
 fig = plt.figure(figsize=plt.figaspect(1))  # Square figure
-ax = fig.add_subplot(111, projection='3d')
+ax = fig.add_subplot(111, projection='3d', aspect=1)
 
 max_radius = 0
 
@@ -94,16 +94,17 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     # Draw red sphere for satellite
     ax.plot([satx],[saty],[satz], 'ro')
 
+    global max_radius
+    max_radius = max(max(r), max_radius)
+
     # Write satellite name next to it
     if label:
         ax.text(satx, saty, satz, label, fontsize=12)
 
+def doDraw():
     # Adjustment of the axes, so that they all have the same span:
-    global max_radius
-    max_radius = max(max(r), max_radius)
     for axis in 'xyz':
         getattr(ax, 'set_{}lim'.format(axis))((-max_radius, max_radius))
-
-def doDraw():
+    
     # Draw figure
     plt.show()
