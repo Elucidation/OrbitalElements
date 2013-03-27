@@ -144,6 +144,7 @@ graphics.plotEarth()
 # Data from NORAD http://www.celestrak.com/NORAD/elements/
 # filename = "noaa.txt" # NOAA satellites
 # filename = "geo.txt" # Geostationary satellites
+# filename = "gps-ops.txt" # GPS sats
 filename = "military.txt" # Some military satellites
 # filename = "stations.txt" # Space stations
 # filename = "visual.txt" # 100 brightest or so objects
@@ -153,7 +154,7 @@ for line in open(filename,'r'):
     elem += line
     if (line[0] == '2'):
         elem = elem.strip()
-        pretty_print(elem, False)
+        pretty_print(elem, True)
         elem = ""
 
 # pretty_print(elem1)
