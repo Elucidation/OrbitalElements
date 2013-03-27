@@ -40,7 +40,7 @@ def eccentricAnomalyFromMean(mean_anomaly, eccentricity, initValue,
             break
     return e1
 
-def pretty_print(tle, printInfo = True):
+def pretty_print(tle, printInfo = True, labels = True):
     "Returns commented information on a two line element"
     title, line1, line2 =  splitElem(tle)
     if not checkValid(tle):
@@ -121,8 +121,12 @@ def pretty_print(tle, printInfo = True):
         print "true_anomaly    = %g°" % true_anomaly
         print "----------------------------------------------------------------------------------------"
 
-    graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
-                       right_ascension, argument_perigee, true_anomaly, title)
+    if labels:
+        graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
+                           right_ascension, argument_perigee, true_anomaly, title)
+    else:
+        graphics.plotOrbit(semi_major_axis, eccentricity, inclination,
+                           right_ascension, argument_perigee, true_anomaly)
 
 def doChecksum(line):
     """The checksums for each line are calculated by adding the all numerical digits on that line, including the 
@@ -145,17 +149,21 @@ graphics.plotEarth()
 # filename = "noaa.txt" # NOAA satellites
 # filename = "geo.txt" # Geostationary satellites
 # filename = "gps-ops.txt" # GPS sats
-filename = "military.txt" # Some military satellites
+# filename = "military.txt" # Some military satellites
 # filename = "stations.txt" # Space stations
 # filename = "visual.txt" # 100 brightest or so objects
 
-elem = ""
-for line in open(filename,'r'):
-    elem += line
-    if (line[0] == '2'):
-        elem = elem.strip()
-        pretty_print(elem, True)
-        elem = ""
+files = ["noaa.txt", "stations.txt", "military.txt", "gps-ops.txt"]
+
+
+for filename in files:
+    elem = ""
+    for line in open(filename,'r'):
+        elem += line
+        if (line[0] == '2'):
+            elem = elem.strip()
+            pretty_print(elem, False, labels=False)
+            elem = ""
 
 # pretty_print(elem1)
 # pretty_print(dragon)

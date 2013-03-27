@@ -72,7 +72,7 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     xr,yr,zr = pts[:,0].A.flatten(), pts[:,1].A.flatten(), pts[:,2].A.flatten()
 
     # Plot the orbit
-    ax.plot(xr, yr, zr)
+    ax.plot(xr, yr, zr, '-')
     # plt.xlabel('X (km)')
     # plt.ylabel('Y (km)')
     # plt.zlabel('Z (km)')
