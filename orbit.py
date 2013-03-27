@@ -3,6 +3,7 @@ import numpy as np
 from datetime import datetime, timedelta
 import pytz
 import graphics
+import urllib
 
 sqrt = np.sqrt
 pi = np.pi
@@ -153,16 +154,19 @@ graphics.plotEarth()
 # filename = "stations.txt" # Space stations
 # filename = "visual.txt" # 100 brightest or so objects
 
-files = ["noaa.txt", "stations.txt", "military.txt", "gps-ops.txt"]
+# files = ["noaa.txt", "stations.txt", "military.txt", "gps-ops.txt"]
+# files = ["stations.txt"]
 
+names = ["stations", "military"]
 
-for filename in files:
+for urlname in names:
+    f = urllib.urlopen("http://www.celestrak.com/NORAD/elements/%s.txt" % urlname)
     elem = ""
-    for line in open(filename,'r'):
+    for line in f:
         elem += line
         if (line[0] == '2'):
             elem = elem.strip()
-            pretty_print(elem, False, labels=False)
+            pretty_print(elem, printInfo=False, labels=True)
             elem = ""
 
 # pretty_print(elem1)
