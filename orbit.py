@@ -85,13 +85,15 @@ def pretty_print(tle, printInfo = True, labels = True):
 
     # Inferred true anomaly
     eccentric_anomaly = eccentricAnomalyFromMean(mean_anomaly * pi/180, eccentricity, mean_anomaly * pi/180)
-    true_anomaly = np.arctan2(sqrt(1-eccentricity) * cos(eccentric_anomaly/2.0), sqrt(1+eccentricity) * sin(eccentric_anomaly/2.0))
+    true_anomaly = 2*np.arctan2(sqrt(1+eccentricity) * sin(eccentric_anomaly/2.0), sqrt(1-eccentricity) * cos(eccentric_anomaly/2.0))
     # Convert to degrees
     eccentric_anomaly *= 180/pi
     true_anomaly *= 180/pi
 
     if (printInfo):
         print "----------------------------------------------------------------------------------------"
+        print tle
+        print "---"
         print "Satellite Name                                            = %s" % title
         print "Satellite number                                          = %g (%s)" % (satellite_number, "Unclassified" if classification == 'U' else "Classified")
         print "International Designator                                  = YR: %02d, LAUNCH #%d, PIECE: %s" % (international_designator_year, international_designator_launch_number, international_designator_piece_of_launch)
@@ -157,7 +159,7 @@ graphics.plotEarth()
 # files = ["noaa.txt", "stations.txt", "military.txt", "gps-ops.txt"]
 # files = ["stations.txt"]
 
-names = ["stations", "military"]
+names = ["stations"]
 
 for urlname in names:
     f = urllib.urlopen("http://www.celestrak.com/NORAD/elements/%s.txt" % urlname)
@@ -166,7 +168,7 @@ for urlname in names:
         elem += line
         if (line[0] == '2'):
             elem = elem.strip()
-            pretty_print(elem, printInfo=False, labels=True)
+            pretty_print(elem, printInfo=True, labels=True)
             elem = ""
 
 # pretty_print(elem1)
