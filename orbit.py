@@ -5,6 +5,8 @@ import pytz
 import graphics
 import urllib
 
+pdt = pytz.timezone('US/Pacific')
+
 sqrt = np.sqrt
 pi = np.pi
 sin = np.sin
@@ -74,7 +76,17 @@ def pretty_print(tle, printInfo = True, labels = True):
 
     # Inferred Epoch date
     year = 2000 + epoch_year if epoch_year < 70 else 1900 + epoch_year
-    epoch_date = datetime(year=year, month=1, day=1, tzinfo=pytz.utc) + timedelta(days=epoch)
+    epoch_date = datetime(year=year, month=1, day=1, tzinfo=pytz.utc) + timedelta(days=epoch-1) # Have to subtract one day to get correct midnight
+
+    # Time difference of now from epoch, offset in radians
+    diff = datetime.now().replace(tzinfo=pytz.utc) + timedelta(hours=8) - epoch_date # Offset for PDT
+    diff_seconds = 24*60*60*diff.days + diff.seconds + 1e-6*diff.microseconds # sec
+    print "Time offset: %s" % diff
+    motion_per_sec = mean_motion * 2*pi / (24*60*60) # rad/sec
+    print "Radians per second: %g" % motion_per_sec
+    offset = diff_seconds * motion_per_sec #rad
+    print "Offset to apply: %g" % offset
+    mean_anomaly += offset * 180/pi % 360
 
     # Inferred period
     day_seconds = 24*60*60
@@ -168,7 +180,8 @@ for urlname in names:
         elem += line
         if (line[0] == '2'):
             elem = elem.strip()
-            pretty_print(elem, printInfo=True, labels=True)
+            if elem.startswith("ISS"):
+                pretty_print(elem, printInfo=True, labels=True)
             elem = ""
 
 # pretty_print(elem1)

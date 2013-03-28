@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import division
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -88,6 +89,11 @@ def plotOrbit(semi_major_axis, eccentricity=0, inclination=0,
     satx = sat[0,0]
     saty = sat[0,1]
     satz = sat[0,2]
+
+    c = np.sqrt(satx*satx + saty*saty)
+    lat = np.arctan2(satz, c) * 180/pi
+    lon = np.arctan2(saty, satx) * 180/pi
+    print "%s : Lat: %g° Long: %g" % (label, lat, lon)
     
     # Draw radius vector from earth
     # ax.plot([0, satx], [0, saty], [0, satz], 'r-')
